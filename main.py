@@ -31,7 +31,7 @@ st.title("Live Weather Dashboard 🌤️")
 st.sidebar.header("Settings")
 api_key = st.sidebar.text_input("Enter your OpenWeatherMap API Key:", type="password")
 city = st.sidebar.text_input("Enter the city name:", value="Dublin")
-refresh_interval = st.sidebar.slider("Refresh Interval (seconds):", 10, 300, 60)
+refresh_interval = st.sidebar.slider("Refresh Interval (seconds):", 10, 300, 10)
 
 # Placeholder for live updates
 placeholder = st.empty()
