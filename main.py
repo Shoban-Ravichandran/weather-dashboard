@@ -64,7 +64,10 @@ if api_key and city:
                     labels={'x': "Metric", 'y': "Value"},
                     title=f"Weather Metrics for {city}"
                 )
-                st.plotly_chart(fig_plotly)
+                
+                # Adding a unique key to avoid duplicate element IDs on refresh
+                st.plotly_chart(fig_plotly, use_container_width=True, key="weather_plot")
+
 
                 # CSV Download Option
                 st.download_button(
