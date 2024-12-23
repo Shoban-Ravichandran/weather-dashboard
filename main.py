@@ -31,7 +31,7 @@ st.title("Live Weather Dashboard 🌤️")
 st.sidebar.header("Settings")
 api_key = st.sidebar.text_input("Enter your OpenWeatherMap API Key:", type="password")
 city = st.sidebar.text_input("Enter the city name:", value="Dublin")
-refresh_interval = st.sidebar.slider("Refresh Interval (seconds):", 10, 300, 10)
+refresh_interval = st.sidebar.slider("Refresh Interval (seconds):", 10, 300, 60)
 
 # Placeholder for live updates
 placeholder = st.empty()
@@ -68,12 +68,13 @@ if api_key and city:
                 # Use current timestamp to ensure unique key for each plotly chart
                 st.plotly_chart(fig_plotly, use_container_width=True, key=f"weather_plot_{datetime.now().strftime('%Y%m%d%H%M%S')}")
 
-                # CSV Download Option
+                # Adding unique key to the download button
                 st.download_button(
                     label="Download Weather Data as CSV",
                     data=df.to_csv(index=False),
                     file_name=f'{city}_weather_data.csv',
                     mime='text/csv',
+                    key=f"download_button_{datetime.now().strftime('%Y%m%d%H%M%S')}"  # Unique key
                 )
 
             # Wait for the refresh interval before updating
