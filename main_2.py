@@ -63,7 +63,9 @@ def fetch_weather_for_all_cities(cities, api_key):
                 'Weather': data['weather'][0]['description'],
                 'Time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                 'Sunrise': datetime.utcfromtimestamp(data['sys']['sunrise']).strftime('%H:%M:%S'),
-                'Sunset': datetime.utcfromtimestamp(data['sys']['sunset']).strftime('%H:%M:%S')
+                'Sunset': datetime.utcfromtimestamp(data['sys']['sunset']).strftime('%H:%M:%S'),
+                'Latitude': data['coord']['lat'],
+                'Longitude': data['coord']['lon']
             }
             weather_data_list.append(weather_info)
         else:
@@ -101,11 +103,32 @@ if st.button("Fetch All Weather Data"):
         st.subheader("Weather Data for Selected Cities")
         st.write(weather_data)
 
-        # Plot the data using Plotly for each city
-        for city in cities:
-            city_data = weather_data[weather_data['City'] == city]
-            fig = px.bar(city_data, x='City', y=['Temperature (°C)', 'Humidity (%)', 'Wind Speed (m/s)', 'Pressure (hPa)'],
-                         title=f"Weather Metrics for {city}")
+        # Create a Map with weather metrics
+        if not weather_data.empty:
+            fig = go.Figure(go.Scattermapbox(
+                lat=weather_data['Latitude'],
+                lon=weather_data['Longitude'],
+                mode='markers',
+                marker=go.scattermapbox.Marker(
+                    size=14,
+                    color=weather_data['Temperature (°C)'],  # Color based on temperature
+                    colorscale='Viridis',  # You can change the color scale
+                    colorbar={'title': 'Temperature (°C)'}
+                ),
+                text=weather_data['City'] + "<br>" +
+                     "Temperature: " + weather_data['Temperature (°C)'].astype(str) + "°C<br>" +
+                     "Humidity: " + weather_data['Humidity (%)'].astype(str) + "%<br>" +
+                     "Wind Speed: " + weather_data['Wind Speed (m/s)'].astype(str) + " m/s",
+                hoverinfo='text'
+            ))
+
+            fig.update_layout(
+                title="Weather Data on Map",
+                mapbox_style="carto-positron",
+                mapbox_center={"lat": 20, "lon": 0},  # Adjust map center
+                mapbox_zoom=2  # Adjust zoom level
+            )
+
             st.plotly_chart(fig)
 
         # Provide a download button for the data
@@ -118,4 +141,5 @@ if st.button("Fetch All Weather Data"):
         )
     else:
         st.error("Please enter a valid API key.")
+
 
