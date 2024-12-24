@@ -8,6 +8,7 @@ import time
 
 # List of available cities (top 1000 cities for demonstration purposes)
 available_cities = [
+    "Dublin",
     "New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia", "San Antonio", "San Diego", "Dallas", "San Jose",  # USA
     "London", "Birmingham", "Manchester", "Leeds", "Glasgow", "Liverpool", "Edinburgh", "Bristol", "Sheffield", "Leicester",  # UK
     "Mumbai", "Delhi", "Bangalore", "Kolkata", "Chennai", "Hyderabad", "Ahmedabad", "Pune", "Jaipur", "Surat",  # India
