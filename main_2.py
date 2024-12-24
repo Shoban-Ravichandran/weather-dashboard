@@ -102,4 +102,22 @@ for city in cities:
 
         # Show 24-hour forecast with unique key
         forecast_df = fetch_forecast(city, api_key)
-        if forecast_df is not None
+        if forecast_df is not None:
+            st.subheader(f"24-Hour Forecast for {city}")
+            st.write(forecast_df)
+            fig_forecast = px.line(forecast_df, x="Time", y="Temperature (°C)", title=f"24-Hour Temperature Forecast for {city}")
+            st.plotly_chart(fig_forecast)
+
+    # Wait for the refresh interval before updating
+    time.sleep(refresh_interval)
+
+# Download all historical data recorded during the session
+if st.session_state.weather_history:
+    st.subheader("Download All Recorded Weather Data")
+    history_df = pd.DataFrame(st.session_state.weather_history)
+    st.download_button(
+        label="Download Full Weather History as CSV",
+        data=history_df.to_csv(index=False),
+        file_name=f'full_weather_history.csv',
+        mime='text/csv'
+    )
