@@ -74,12 +74,19 @@ def fetch_weather_for_all_cities(cities, api_key):
 # Streamlit App Layout
 st.title("Live Weather Dashboard 🌤️")
 
+# Initialize cities in session state
+if 'cities' not in st.session_state:
+    st.session_state.cities = []
+
 # Dropdown for city selection (User can select multiple cities)
 cities = st.multiselect("Select cities for weather data:", available_cities, default=["Dublin", "Paris"])
 
 # Button to select all cities
 if st.button('Select All Cities'):
-    cities = available_cities
+    st.session_state.cities = available_cities  # Save all cities to session state
+
+# Update cities list if modified
+cities = st.session_state.cities if st.session_state.cities else cities
 
 # Input for API Key
 api_key = st.sidebar.text_input("Enter your OpenWeatherMap API Key:", type="password")
@@ -111,3 +118,4 @@ if st.button("Fetch All Weather Data"):
         )
     else:
         st.error("Please enter a valid API key.")
+
