@@ -50,9 +50,9 @@ def fetch_forecast(city, api_key):
 # Streamlit App Layout
 st.title("Live Weather Dashboard 🌤️")
 
-# Input Section for multiple cities
-cities_input = st.sidebar.text_input("Enter the city names (comma-separated):", value="Dublin, Paris, New York")
-cities = [city.strip() for city in cities_input.split(",")]
+# Dropdown for city selection (User can select multiple cities)
+available_cities = ["Dublin", "Paris", "New York", "London", "Tokyo", "Sydney"]  # List of available cities
+cities = st.multiselect("Select cities for weather data:", available_cities, default=["Dublin", "Paris"])
 
 # Input for API Key and Refresh Interval
 api_key = st.sidebar.text_input("Enter your OpenWeatherMap API Key:", type="password")
@@ -112,7 +112,7 @@ while True:
     # Wait for the refresh interval before updating all cities
     time.sleep(refresh_interval)
 
-# Download all historical data recorded during the session
+# Download all recorded data during the session
 if st.session_state.weather_history:
     st.subheader("Download All Recorded Weather Data")
     history_df = pd.DataFrame(st.session_state.weather_history)
