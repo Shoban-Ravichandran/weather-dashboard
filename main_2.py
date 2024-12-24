@@ -67,47 +67,48 @@ while True:
     for city in cities:
         # Generate a dynamic key based on city and timestamp
         timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+        dynamic_key = f"{city}_{timestamp}"
 
         # Display the title without 'key' for subheader
-        st.subheader(f"Weather Data for {city}")
+        st.subheader(f"Weather Data for {city}", key=f"weather_title_{dynamic_key}")
         
         weather_data = fetch_weather(city, api_key)
         if weather_data:
             # Append the latest weather data to session history
             st.session_state.weather_history.append(weather_data)
 
-            # Display Data
-            st.write(weather_data)
+            # Display Data with unique key for each city
+            st.write(weather_data, key=f"weather_data_{dynamic_key}")
 
             # DataFrame for Visualization
             df = pd.DataFrame([weather_data])
 
             # Temperature & Humidity Plot
-            st.subheader("Temperature & Humidity")
+            st.subheader("Temperature & Humidity", key=f"temp_humidity_{dynamic_key}")
             fig, ax = plt.subplots()
             ax.bar(["Temperature", "Humidity", "Wind Speed", "Pressure"], 
                    [df['Temperature (°C)'][0], df['Humidity (%)'][0], df['Wind Speed (m/s)'][0], df['Pressure (hPa)'][0]], 
                    color=["blue", "green", "orange", "red"])
             ax.set_ylabel("Value")
-            st.pyplot(fig)
+            st.pyplot(fig, key=f"temp_humidity_plot_{dynamic_key}")
 
             # Advanced Visualization with Plotly
-            st.subheader("Interactive Visualization")
+            st.subheader("Interactive Visualization", key=f"interactive_visualization_{dynamic_key}")
             fig_plotly = px.bar(
                 x=["Temperature (°C)", "Humidity (%)", "Wind Speed (m/s)", "Pressure (hPa)"],
                 y=[df['Temperature (°C)'][0], df['Humidity (%)'][0], df['Wind Speed (m/s)'][0], df['Pressure (hPa)'][0]],
                 labels={'x': "Metric", 'y': "Value"},
                 title=f"Weather Metrics for {city}"
             )
-            st.plotly_chart(fig_plotly)
+            st.plotly_chart(fig_plotly, key=f"plotly_chart_{dynamic_key}")
 
             # Show 24-hour forecast with unique key
             forecast_df = fetch_forecast(city, api_key)
             if forecast_df is not None:
-                st.subheader(f"24-Hour Forecast for {city}")
-                st.write(forecast_df)
+                st.subheader(f"24-Hour Forecast for {city}", key=f"forecast_title_{dynamic_key}")
+                st.write(forecast_df, key=f"forecast_data_{dynamic_key}")
                 fig_forecast = px.line(forecast_df, x="Time", y="Temperature (°C)", title=f"24-Hour Temperature Forecast for {city}")
-                st.plotly_chart(fig_forecast)
+                st.plotly_chart(fig_forecast, key=f"forecast_plot_{dynamic_key}")
 
     # Wait for the refresh interval before updating all cities
     time.sleep(refresh_interval)
@@ -120,5 +121,6 @@ if st.session_state.weather_history:
         label="Download Full Weather History as CSV",
         data=history_df.to_csv(index=False),
         file_name=f'full_weather_history.csv',
-        mime='text/csv'
+        mime='text/csv',
+        key="download_button"
     )
