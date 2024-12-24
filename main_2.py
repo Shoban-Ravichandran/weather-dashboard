@@ -88,7 +88,10 @@ while True:
             ax.set_ylabel("Value")
             st.pyplot(fig)
 
-            # Advanced Visualization with Plotly
+            # Advanced Visualization with Plotly - generate unique key for each city and time
+            timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+            unique_key = f"interactive_plot_{city}_{timestamp}"
+            
             st.subheader("Interactive Visualization")
             fig_plotly = px.bar(
                 x=["Temperature (°C)", "Humidity (%)", "Wind Speed (m/s)", "Pressure (hPa)"],
@@ -96,7 +99,7 @@ while True:
                 labels={'x': "Metric", 'y': "Value"},
                 title=f"Weather Metrics for {city}"
             )
-            st.plotly_chart(fig_plotly)
+            st.plotly_chart(fig_plotly, use_container_width=True, key=unique_key)
 
             # Show 24-hour forecast with unique key
             forecast_df = fetch_forecast(city, api_key)
@@ -104,7 +107,7 @@ while True:
                 st.subheader(f"24-Hour Forecast for {city}")
                 st.write(forecast_df)
                 fig_forecast = px.line(forecast_df, x="Time", y="Temperature (°C)", title=f"24-Hour Temperature Forecast for {city}")
-                st.plotly_chart(fig_forecast)
+                st.plotly_chart(fig_forecast, key=f"forecast_plot_{city}_{timestamp}")
 
     # Wait for the refresh interval before updating all cities
     time.sleep(refresh_interval)
