@@ -77,6 +77,10 @@ st.title("Live Weather Dashboard 🌤️")
 # Dropdown for city selection (User can select multiple cities)
 cities = st.multiselect("Select cities for weather data:", available_cities, default=["Dublin", "Paris"])
 
+# Button to select all cities
+if st.button('Select All Cities'):
+    cities = available_cities
+
 # Input for API Key
 api_key = st.sidebar.text_input("Enter your OpenWeatherMap API Key:", type="password")
 
