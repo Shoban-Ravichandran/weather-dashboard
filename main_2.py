@@ -63,52 +63,53 @@ if "weather_history" not in st.session_state:
     st.session_state.weather_history = []
 
 # Placeholder for live updates for multiple cities
-for city in cities:
-    # Generate a dynamic key based on city and timestamp
-    timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+while True:
+    for city in cities:
+        # Generate a dynamic key based on city and timestamp
+        timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
 
-    # Display the title without 'key' for subheader
-    st.subheader(f"Weather Data for {city}")
-    
-    weather_data = fetch_weather(city, api_key)
-    if weather_data:
-        # Append the latest weather data to session history
-        st.session_state.weather_history.append(weather_data)
+        # Display the title without 'key' for subheader
+        st.subheader(f"Weather Data for {city}")
+        
+        weather_data = fetch_weather(city, api_key)
+        if weather_data:
+            # Append the latest weather data to session history
+            st.session_state.weather_history.append(weather_data)
 
-        # Display Data
-        st.write(weather_data)
+            # Display Data
+            st.write(weather_data)
 
-        # DataFrame for Visualization
-        df = pd.DataFrame([weather_data])
+            # DataFrame for Visualization
+            df = pd.DataFrame([weather_data])
 
-        # Temperature & Humidity Plot
-        st.subheader("Temperature & Humidity")
-        fig, ax = plt.subplots()
-        ax.bar(["Temperature", "Humidity", "Wind Speed", "Pressure"], 
-               [df['Temperature (°C)'][0], df['Humidity (%)'][0], df['Wind Speed (m/s)'][0], df['Pressure (hPa)'][0]], 
-               color=["blue", "green", "orange", "red"])
-        ax.set_ylabel("Value")
-        st.pyplot(fig)
+            # Temperature & Humidity Plot
+            st.subheader("Temperature & Humidity")
+            fig, ax = plt.subplots()
+            ax.bar(["Temperature", "Humidity", "Wind Speed", "Pressure"], 
+                   [df['Temperature (°C)'][0], df['Humidity (%)'][0], df['Wind Speed (m/s)'][0], df['Pressure (hPa)'][0]], 
+                   color=["blue", "green", "orange", "red"])
+            ax.set_ylabel("Value")
+            st.pyplot(fig)
 
-        # Advanced Visualization with Plotly
-        st.subheader("Interactive Visualization")
-        fig_plotly = px.bar(
-            x=["Temperature (°C)", "Humidity (%)", "Wind Speed (m/s)", "Pressure (hPa)"],
-            y=[df['Temperature (°C)'][0], df['Humidity (%)'][0], df['Wind Speed (m/s)'][0], df['Pressure (hPa)'][0]],
-            labels={'x': "Metric", 'y': "Value"},
-            title=f"Weather Metrics for {city}"
-        )
-        st.plotly_chart(fig_plotly)
+            # Advanced Visualization with Plotly
+            st.subheader("Interactive Visualization")
+            fig_plotly = px.bar(
+                x=["Temperature (°C)", "Humidity (%)", "Wind Speed (m/s)", "Pressure (hPa)"],
+                y=[df['Temperature (°C)'][0], df['Humidity (%)'][0], df['Wind Speed (m/s)'][0], df['Pressure (hPa)'][0]],
+                labels={'x': "Metric", 'y': "Value"},
+                title=f"Weather Metrics for {city}"
+            )
+            st.plotly_chart(fig_plotly)
 
-        # Show 24-hour forecast with unique key
-        forecast_df = fetch_forecast(city, api_key)
-        if forecast_df is not None:
-            st.subheader(f"24-Hour Forecast for {city}")
-            st.write(forecast_df)
-            fig_forecast = px.line(forecast_df, x="Time", y="Temperature (°C)", title=f"24-Hour Temperature Forecast for {city}")
-            st.plotly_chart(fig_forecast)
+            # Show 24-hour forecast with unique key
+            forecast_df = fetch_forecast(city, api_key)
+            if forecast_df is not None:
+                st.subheader(f"24-Hour Forecast for {city}")
+                st.write(forecast_df)
+                fig_forecast = px.line(forecast_df, x="Time", y="Temperature (°C)", title=f"24-Hour Temperature Forecast for {city}")
+                st.plotly_chart(fig_forecast)
 
-    # Wait for the refresh interval before updating
+    # Wait for the refresh interval before updating all cities
     time.sleep(refresh_interval)
 
 # Download all historical data recorded during the session
