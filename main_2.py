@@ -50,78 +50,75 @@ def fetch_forecast(city, api_key):
 # Streamlit App Layout
 st.title("Live Weather Dashboard 🌤️")
 
-# Input Section
-st.sidebar.header("Settings")
+# Input Section for multiple cities
+cities_input = st.sidebar.text_input("Enter the city names (comma-separated):", value="Dublin, Paris, New York")
+cities = [city.strip() for city in cities_input.split(",")]
+
+# Input for API Key and Refresh Interval
 api_key = st.sidebar.text_input("Enter your OpenWeatherMap API Key:", type="password")
-city = st.sidebar.text_input("Enter the city name:", value="Dublin")
-refresh_interval = st.sidebar.slider("Refresh Interval (seconds):", 10, 300, 10)
+refresh_interval = st.sidebar.slider("Refresh Interval (seconds):", 10, 300, 30)
 
 # Initialize session state to store historical weather data
 if "weather_history" not in st.session_state:
     st.session_state.weather_history = []
 
-# Placeholder for live updates
-placeholder = st.empty()
+# Placeholder for live updates for multiple cities
+for city in cities:
+    # Generate a dynamic key based on city and timestamp
+    timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+    
+    # Display the title with dynamic key
+    st.subheader(f"Weather Data for {city}", key=f"weather_title_{city}_{timestamp}")
+    
+    weather_data = fetch_weather(city, api_key)
+    if weather_data:
+        # Append the latest weather data to session history
+        st.session_state.weather_history.append(weather_data)
 
-if api_key and city:
-    # Live Weather Data Display
-    with placeholder.container():
-        while True:
-            weather_data = fetch_weather(city, api_key)
-            if weather_data:
-                # Append the latest weather data to session history
-                st.session_state.weather_history.append(weather_data)
+        # Display Data with dynamic key
+        st.write(weather_data, key=f"weather_data_{city}_{timestamp}")
 
-                # Display Data
-                st.subheader("Weather Data")
-                st.write(weather_data)
+        # DataFrame for Visualization
+        df = pd.DataFrame([weather_data])
 
-                # DataFrame for Visualization
-                df = pd.DataFrame([weather_data])
+        # Temperature & Humidity Plot
+        st.subheader("Temperature & Humidity", key=f"plot_title_{city}_{timestamp}")
+        fig, ax = plt.subplots()
+        ax.bar(["Temperature", "Humidity", "Wind Speed", "Pressure"], 
+               [df['Temperature (°C)'][0], df['Humidity (%)'][0], df['Wind Speed (m/s)'][0], df['Pressure (hPa)'][0]], 
+               color=["blue", "green", "orange", "red"])
+        ax.set_ylabel("Value")
+        st.pyplot(fig, key=f"temperature_humidity_plot_{city}_{timestamp}")
 
-                # Temperature & Humidity Plot
-                st.subheader("Temperature & Humidity")
-                fig, ax = plt.subplots()
-                ax.bar(["Temperature", "Humidity", "Wind Speed", "Pressure"], 
-                       [df['Temperature (°C)'][0], df['Humidity (%)'][0], df['Wind Speed (m/s)'][0], df['Pressure (hPa)'][0]], 
-                       color=["blue", "green", "orange", "red"])
-                ax.set_ylabel("Value")
-                st.pyplot(fig)
+        # Advanced Visualization with Plotly
+        st.subheader("Interactive Visualization", key=f"interactive_plot_{city}_{timestamp}")
+        fig_plotly = px.bar(
+            x=["Temperature (°C)", "Humidity (%)", "Wind Speed (m/s)", "Pressure (hPa)"],
+            y=[df['Temperature (°C)'][0], df['Humidity (%)'][0], df['Wind Speed (m/s)'][0], df['Pressure (hPa)'][0]],
+            labels={'x': "Metric", 'y': "Value"},
+            title=f"Weather Metrics for {city}"
+        )
+        st.plotly_chart(fig_plotly, key=f"weather_plot_{city}_{timestamp}")
 
-                # Advanced Visualization with Plotly
-                st.subheader("Interactive Visualization")
-                fig_plotly = px.bar(
-                    x=["Temperature (°C)", "Humidity (%)", "Wind Speed (m/s)", "Pressure (hPa)"],
-                    y=[df['Temperature (°C)'][0], df['Humidity (%)'][0], df['Wind Speed (m/s)'][0], df['Pressure (hPa)'][0]],
-                    labels={'x': "Metric", 'y': "Value"},
-                    title=f"Weather Metrics for {city}"
-                )
+        # Show 24-hour forecast with unique key
+        forecast_df = fetch_forecast(city, api_key)
+        if forecast_df is not None:
+            st.subheader(f"24-Hour Forecast for {city}", key=f"forecast_title_{city}_{timestamp}")
+            st.write(forecast_df, key=f"forecast_data_{city}_{timestamp}")
+            fig_forecast = px.line(forecast_df, x="Time", y="Temperature (°C)", title=f"24-Hour Temperature Forecast for {city}")
+            st.plotly_chart(fig_forecast, key=f"forecast_plot_{city}_{timestamp}")
 
-                # Use current timestamp to ensure unique key for each plotly chart
-                st.plotly_chart(fig_plotly, use_container_width=True, key=f"weather_plot_{datetime.now().strftime('%Y%m%d%H%M%S')}")
+    # Wait for the refresh interval before updating
+    time.sleep(refresh_interval)
 
-                # Show 24-hour forecast (next 8 timeslots)
-                forecast_df = fetch_forecast(city, api_key)
-                if forecast_df is not None:
-                    st.subheader("24-Hour Forecast")
-                    st.write(forecast_df)
-                    fig_forecast = px.line(forecast_df, x="Time", y="Temperature (°C)", title=f"24-Hour Temperature Forecast for {city}")
-                    st.plotly_chart(fig_forecast)
-
-            # Wait for the refresh interval before updating
-            time.sleep(refresh_interval)
-
-        # Download all historical data recorded during the session
-        if st.session_state.weather_history:
-            st.subheader("Download All Recorded Weather Data")
-            history_df = pd.DataFrame(st.session_state.weather_history)
-            st.download_button(
-                label="Download Full Weather History as CSV",
-                data=history_df.to_csv(index=False),
-                file_name=f'{city}_full_weather_history.csv',
-                mime='text/csv',
-                key="full_history_download_button"
-            )
-
-else:
-    st.warning("Please enter both the API key and city name in the sidebar to start.")
+# Download all historical data recorded during the session
+if st.session_state.weather_history:
+    st.subheader("Download All Recorded Weather Data")
+    history_df = pd.DataFrame(st.session_state.weather_history)
+    st.download_button(
+        label="Download Full Weather History as CSV",
+        data=history_df.to_csv(index=False),
+        file_name=f'full_weather_history.csv',
+        mime='text/csv',
+        key="full_history_download_button"
+    )
