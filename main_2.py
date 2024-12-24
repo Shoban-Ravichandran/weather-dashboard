@@ -65,10 +65,6 @@ if "weather_history" not in st.session_state:
 # Placeholder for live updates for multiple cities
 while True:
     for city in cities:
-        # Generate a dynamic key based on city and timestamp
-        timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-        dynamic_key = f"{city}_{timestamp}"
-
         # Display the title without 'key' for subheader
         st.subheader(f"Weather Data for {city}")
         
@@ -77,7 +73,7 @@ while True:
             # Append the latest weather data to session history
             st.session_state.weather_history.append(weather_data)
 
-            # Display Data with unique key for each city
+            # Display Data
             st.write(weather_data)
 
             # DataFrame for Visualization
