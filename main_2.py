@@ -47,44 +47,29 @@ available_cities = [
 
 # Cache the weather data to improve performance
 @st.cache_data
-def fetch_weather(city, api_key):
-    url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric'
-    response = requests.get(url)
-    if response.status_code == 200:
-        data = response.json()
-        weather_info = {
-            'City': data['name'],
-            'Temperature (°C)': data['main']['temp'],
-            'Humidity (%)': data['main']['humidity'],
-            'Wind Speed (m/s)': data['wind']['speed'],
-            'Pressure (hPa)': data['main']['pressure'],
-            'Weather': data['weather'][0]['description'],
-            'Time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'Sunrise': datetime.utcfromtimestamp(data['sys']['sunrise']).strftime('%H:%M:%S'),
-            'Sunset': datetime.utcfromtimestamp(data['sys']['sunset']).strftime('%H:%M:%S')
-        }
-        return weather_info
-    else:
-        st.error("Failed to fetch data. Check the city name or API key.")
-        return None
-
-# Fetch forecast data (optional)
-@st.cache_data
-def fetch_forecast(city, api_key):
-    url = f'http://api.openweathermap.org/data/2.5/forecast?q={city}&appid={api_key}&units=metric'
-    response = requests.get(url)
-    if response.status_code == 200:
-        data = response.json()
-        forecast_data = []
-        for entry in data['list'][:8]:  # Get next 24 hours forecast
-            forecast_data.append({
-                'Time': datetime.utcfromtimestamp(entry['dt']).strftime('%Y-%m-%d %H:%M:%S'),
-                'Temperature (°C)': entry['main']['temp'],
-                'Humidity (%)': entry['main']['humidity']
-            })
-        return pd.DataFrame(forecast_data)
-    else:
-        return None
+def fetch_weather_for_all_cities(cities, api_key):
+    weather_data_list = []
+    for city in cities:
+        url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric'
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            weather_info = {
+                'City': data['name'],
+                'Temperature (°C)': data['main']['temp'],
+                'Humidity (%)': data['main']['humidity'],
+                'Wind Speed (m/s)': data['wind']['speed'],
+                'Pressure (hPa)': data['main']['pressure'],
+                'Weather': data['weather'][0]['description'],
+                'Time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'Sunrise': datetime.utcfromtimestamp(data['sys']['sunrise']).strftime('%H:%M:%S'),
+                'Sunset': datetime.utcfromtimestamp(data['sys']['sunset']).strftime('%H:%M:%S')
+            }
+            weather_data_list.append(weather_info)
+        else:
+            st.error(f"Failed to fetch data for {city}. Check the city name or API key.")
+    
+    return pd.DataFrame(weather_data_list)
 
 # Streamlit App Layout
 st.title("Live Weather Dashboard 🌤️")
@@ -92,44 +77,33 @@ st.title("Live Weather Dashboard 🌤️")
 # Dropdown for city selection (User can select multiple cities)
 cities = st.multiselect("Select cities for weather data:", available_cities, default=["Dublin", "Paris"])
 
-# Add "Select All" Button to select all cities
-if st.button('Select All Cities'):
-    cities = available_cities
-
-# Input for API Key and Refresh Interval
+# Input for API Key
 api_key = st.sidebar.text_input("Enter your OpenWeatherMap API Key:", type="password")
-refresh_interval = st.sidebar.slider("Refresh Interval (seconds):", 10, 300, 30)
 
-# Initialize session state to store historical weather data
-if "weather_history" not in st.session_state:
-    st.session_state.weather_history = []
+# Button to fetch all data at once
+if st.button("Fetch All Weather Data"):
+    if api_key:
+        # Fetch weather data for all selected cities
+        weather_data = fetch_weather_for_all_cities(cities, api_key)
+        
+        # Display the fetched data in a table
+        st.subheader("Weather Data for Selected Cities")
+        st.write(weather_data)
 
-# Placeholder for live updates for multiple cities
-while True:
-    for city in cities:
-        # Display the title without 'key' for subheader
-        st.subheader(f"Weather Data for {city}")
-
-        weather_data = fetch_weather(city, api_key)
-        if weather_data:
-            # Append the latest weather data to session history
-            st.session_state.weather_history.append(weather_data)
-
-            # Display Data
-            st.write(weather_data)
-
-            # DataFrame for Visualization
-            df = pd.DataFrame([weather_data])
-
-            # Plotly Chart for Weather Data
-            fig = px.bar(df, x='City', y=['Temperature (°C)', 'Humidity (%)', 'Wind Speed (m/s)', 'Pressure (hPa)'],
+        # Plot the data using Plotly for each city
+        for city in cities:
+            city_data = weather_data[weather_data['City'] == city]
+            fig = px.bar(city_data, x='City', y=['Temperature (°C)', 'Humidity (%)', 'Wind Speed (m/s)', 'Pressure (hPa)'],
                          title=f"Weather Metrics for {city}")
-            st.plotly_chart(fig, key=f"weather_chart_{city}_{random.randint(1000,9999)}")  # Adding unique key
+            st.plotly_chart(fig)
 
-            # Forecast data (optional)
-            forecast_data = fetch_forecast(city, api_key)
-            if forecast_data is not None:
-                st.subheader(f"24-Hour Weather Forecast for {city}")
-                st.write(forecast_data)
-
-    time.sleep(refresh_interval)
+        # Provide a download button for the data
+        csv = weather_data.to_csv(index=False)
+        st.download_button(
+            label="Download Weather Data as CSV",
+            data=csv,
+            file_name="weather_data.csv",
+            mime="text/csv"
+        )
+    else:
+        st.error("Please enter a valid API key.")
