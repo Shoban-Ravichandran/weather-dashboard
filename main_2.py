@@ -120,5 +120,6 @@ if st.session_state.weather_history:
         label="Download Full Weather History as CSV",
         data=history_df.to_csv(index=False),
         file_name=f'full_weather_history.csv',
-        mime='text/csv'
+        mime='text/csv',
+        key="download_button"
     )
