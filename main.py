@@ -117,6 +117,8 @@ api_key_input = st.text_input("Enter your OpenWeatherMap API Key:", type="passwo
 # If the API key is not entered, provide a link to get one
 if not api_key_input:
     st.caption("Don't have an API Key? You can get one for free from OpenWeatherMap [here](https://openweathermap.org/api).")
+    st.caption("If you still face issues generating your API Key please refer to this [youtube tutorial](https://www.youtube.com/watch?v=Czdg9RhoI_I)")
+    st.caption("Note: Make sure to use the auto generated closed captions for better understanding.")
 if api_key_input:
     st.session_state.api_key = api_key_input
 
