@@ -107,7 +107,7 @@ if "weather_data" not in st.session_state:
     st.session_state.weather_data = pd.DataFrame()  # Placeholder for weather data
 # Allow user to select cities, using session state to store the cities
 cities = st.multiselect("Select cities for weather data:", available_cities, default=st.session_state.cities)
-st.session_state.cities = available_cities
+# st.session_state.cities = available_cities
 # Create two columns for the buttons
 col1, col2 = st.columns(2)
 
