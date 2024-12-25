@@ -4,3 +4,4 @@ pandas
 plotly
 folium
 streamlit-folium
+xlsxwriter
