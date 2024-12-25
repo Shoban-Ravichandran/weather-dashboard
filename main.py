@@ -105,9 +105,9 @@ if "cities" not in st.session_state:
     st.session_state.cities = ["Chennai", "Kochi"]  # Default cities if not set
 if "weather_data" not in st.session_state:
     st.session_state.weather_data = pd.DataFrame()  # Placeholder for weather data
-st.session_state.cities = available_cities
 # Allow user to select cities, using session state to store the cities
 cities = st.multiselect("Select cities for weather data:", available_cities, default=st.session_state.cities)
+st.session_state.cities = available_cities
 # Select Cities with 'Select All' button
 if st.button("Select All Cities"):
     st.session_state.cities = available_cities
