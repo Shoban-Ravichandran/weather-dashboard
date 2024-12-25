@@ -87,10 +87,10 @@ Feel free to fork the repository, make improvements, or report issues. To contri
 4. Submit a pull request.
 
 ## Acknowledgements
-- OpenWeatherMap API for providing real-time weather data.
-- Streamlit for building the interactive web app.
-- Plotly for creating the interactive charts.
-- Folium for generating interactive maps.
+- [OpenWeatherMap API](https://openweathermap.org/api) for providing real-time weather data.
+- [Streamlit](https://streamlit.io/) for building the interactive web app.
+- [Plotly](https://pypi.org/project/plotly/) for creating the interactive charts.
+- [Folium](https://pypi.org/project/folium/) for generating interactive maps.
 
 ## Contact
 
