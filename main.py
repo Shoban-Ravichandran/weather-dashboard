@@ -118,7 +118,8 @@ with col2:
     if st.button('Deselect All'):
         st.session_state.cities = []
 # Allow user to select cities, using session state to store the cities
-cities = st.multiselect("Select cities for weather data:", available_cities, default=st.session_state.cities)
+available_cities_sorted = sorted(available_cities)
+cities = st.multiselect("Select cities for weather data:", available_cities_sorted, default=st.session_state.cities)
 if len(cities)==0:
     st.write("No city selected.")
 
@@ -169,7 +170,7 @@ if not weather_data.empty:
     # Comparison Plot (User selects cities)
     if len(cities) > 1:
         st.subheader("Compare Weather Data")
-
+        cities = sorted(cities)
         comparison_cities = st.multiselect(
             "Select cities to compare:",
             options=cities,
@@ -297,7 +298,7 @@ if not weather_data.empty:
             # Multiselect widget for city selection with session state
             selected_cities = st.multiselect(
                 "Select cities to display time:",
-                options=weather_data['City'].tolist(),
+                options=sorted(weather_data['City'].tolist()),
                 default=cities[:2]
             )
             
