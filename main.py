@@ -108,9 +108,18 @@ if "weather_data" not in st.session_state:
 # Allow user to select cities, using session state to store the cities
 cities = st.multiselect("Select cities for weather data:", available_cities, default=st.session_state.cities)
 st.session_state.cities = available_cities
-# Select Cities with 'Select All' button
-if st.button("Select All Cities"):
-    st.session_state.cities = available_cities
+# Create two columns for the buttons
+col1, col2 = st.columns(2)
+
+# Place the "Select All Cities" button in the first column
+with col1:
+    if st.button("Select All Cities"):
+        st.session_state.cities = available_cities
+
+# Place the "Deselect All" button in the second column
+with col2:
+    if st.button('Deselect All'):
+        st.session_state.cities = ["Chennai", "Kochi"]
 # Prompt for API Key input
 api_key_input = st.text_input("Enter your OpenWeatherMap API Key:", type="password")
 
