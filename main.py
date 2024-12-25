@@ -102,17 +102,17 @@ available_cities = [
 
 # Initialize session state for cities and weather data if not already set
 if "cities" not in st.session_state:
-    st.session_state.cities = ["Dublin", "London"]  # Default cities if not set
+    st.session_state.cities = ["Chennai", "Kochi"]  # Default cities if not set
 if "weather_data" not in st.session_state:
     st.session_state.weather_data = pd.DataFrame()  # Placeholder for weather data
 
-# Select Cities with 'Select All' button
-if st.button("Select All Cities"):
-    st.session_state.cities = available_cities
+
 
 # Allow user to select cities, using session state to store the cities
 cities = st.multiselect("Select cities for weather data:", available_cities, default=st.session_state.cities)
-
+# Select Cities with 'Select All' button
+if st.button("Select All Cities"):
+    st.session_state.cities = available_cities
 # Prompt for API Key input
 api_key_input = st.text_input("Enter your OpenWeatherMap API Key:", type="password")
 
