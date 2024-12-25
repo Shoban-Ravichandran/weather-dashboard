@@ -116,10 +116,11 @@ with col1:
 # Place the "Deselect All" button in the second column
 with col2:
     if st.button('Deselect All'):
-        st.session_state.cities = ["Chennai", "Kochi"]
+        st.session_state.cities = []
 # Allow user to select cities, using session state to store the cities
 cities = st.multiselect("Select cities for weather data:", available_cities, default=st.session_state.cities)
-# st.session_state.cities = available_cities
+if len(cities)==0:
+    st.write("No city selected.")
 
 # Prompt for API Key input
 api_key_input = st.text_input("Enter your OpenWeatherMap API Key:", type="password")
