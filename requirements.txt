@@ -1,5 +1,6 @@
 streamlit
 requests
 pandas
-matplotlib
 plotly
+folium
+streamlit-folium
