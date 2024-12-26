@@ -66,7 +66,7 @@ st.sidebar.write(f"Language selected: {language.upper()}")
 available_cities = [
     "New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia", "San Antonio", "San Diego", "Dallas", "San Jose","Jacksonville",  # USA
     "London", "Birmingham", "Manchester", "Leeds", "Glasgow", "Liverpool", "Edinburgh", "Bristol", "Sheffield", "Leicester","Cambridge",  # UK
-    "Mumbai", "Delhi", "Bangalore", "Kolkata", "Chennai", "Hyderabad","Ahmedabad", "Pune", "Surat", "Jaipur", "Lucknow", "Kanpur","Nagpur", "Indore", "Patna", "Vadodara", "Ghaziabad", "Ludhiana","Agra", "Nashik", "Faridabad", "Meerut", "Bhopal", "Coimbatore","Kochi", "Vijayawada", "Madurai", "Chandigarh", "Mysore", "Visakhapatnam","Rajkot", "Shivamogga", "Gurugram",#India
+    "Mumbai", "Delhi", "Bangalore", "Kolkata", "Chennai", "Hyderabad","Theni","Ahmedabad", "Pune", "Surat", "Jaipur", "Lucknow", "Kanpur","Nagpur", "Indore", "Patna", "Vadodara", "Ghaziabad", "Ludhiana","Agra", "Nashik", "Faridabad", "Meerut", "Bhopal", "Coimbatore","Kochi", "Vijayawada", "Madurai", "Chandigarh", "Mysore", "Visakhapatnam","Rajkot", "Shivamogga", "Gurugram",#India
     "Paris", "Marseille", "Lyon", "Toulouse", "Nice", "Nantes", "Strasbourg", "Montpellier", "Bordeaux", "Lille",  # France
     "Berlin", "Hamburg", "Munich", "Cologne", "Frankfurt", "Stuttgart", "Dusseldorf", "Dortmund", "Essen", "Bremen",  # Germany
     "Toronto", "Vancouver", "Montreal", "Calgary", "Ottawa", "Edmonton", "Quebec City", "Winnipeg", "Hamilton", "Kitchener",  # Canada
